@@ -907,25 +907,25 @@ describe("role priorities and chains", () => {
 
 	test("appends non-explicit web defaults after a configured primary", () => {
 		const exa = roleChainModel("web", "exa");
-		const parallel = roleChainModel("web", "parallel");
+		const startpage = roleChainModel("web", "startpage");
 		const duckduckgo = roleChainModel("web", "duckduckgo");
 		const settings = Settings.isolated({ modelRoles: { web: "web/exa" } });
 
-		const chain = resolveRoleChain("web", settings, [exa, parallel, duckduckgo]);
+		const chain = resolveRoleChain("web", settings, [exa, startpage, duckduckgo]);
 
 		expect(chain.map(candidate => [formatModelStringWithRouting(candidate.model), candidate.explicit])).toEqual([
 			["web/exa", true],
-			["web/parallel", false],
+			["web/startpage", false],
 			["web/duckduckgo", false],
 		]);
 	});
 
 	test("marks the candidate that runs in place of an unresolved configured selector", () => {
 		const exa = roleChainModel("web", "exa");
-		const parallel = roleChainModel("web", "parallel");
+		const startpage = roleChainModel("web", "startpage");
 		const settings = Settings.isolated({ modelRoles: { web: "web/exa-pro" } });
 
-		const chain = resolveRoleChain("web", settings, [exa, parallel]);
+		const chain = resolveRoleChain("web", settings, [exa, startpage]);
 
 		expect(chain[0]?.replaces).toBe("web/exa-pro");
 		expect(chain.slice(1).some(candidate => candidate.replaces !== undefined)).toBe(false);
@@ -946,10 +946,10 @@ describe("role priorities and chains", () => {
 	});
 
 	test("marks the replacement when a configured role alias expands to a missing selector", () => {
-		const parallel = roleChainModel("web", "parallel");
+		const startpage = roleChainModel("web", "startpage");
 		const settings = Settings.isolated({ modelRoles: { web: "@search", search: "web/exa-pro" } });
 
-		expect(resolveRoleChain("web", settings, [parallel])[0]?.replaces).toBe("web/exa-pro");
+		expect(resolveRoleChain("web", settings, [startpage])[0]?.replaces).toBe("web/exa-pro");
 	});
 
 	test("marks the first qualified entry a list skipped before matching", () => {
@@ -960,38 +960,38 @@ describe("role priorities and chains", () => {
 	});
 
 	test("upgrades a default primary when a configured fallback resolves the same route", () => {
-		const parallel = roleChainModel("web", "parallel");
+		const startpage = roleChainModel("web", "startpage");
 		const settings = Settings.isolated({
-			"retry.fallbackChains": { web: ["web/parallel"] },
+			"retry.fallbackChains": { web: ["web/startpage"] },
 		});
 
-		const chain = resolveRoleChain("web", settings, [parallel]);
+		const chain = resolveRoleChain("web", settings, [startpage]);
 
 		expect(chain.map(candidate => [formatModelStringWithRouting(candidate.model), candidate.explicit])).toEqual([
-			["web/parallel", true],
+			["web/startpage", true],
 		]);
 	});
 
 	test("treats an empty configured role value as explicit by key presence", () => {
-		const parallel = roleChainModel("web", "parallel");
+		const startpage = roleChainModel("web", "startpage");
 		const settings = Settings.isolated({ modelRoles: { web: "" } });
 
-		const chain = resolveRoleChain("web", settings, [parallel]);
+		const chain = resolveRoleChain("web", settings, [startpage]);
 
 		expect(chain.map(candidate => [formatModelStringWithRouting(candidate.model), candidate.explicit])).toEqual([
-			["web/parallel", true],
+			["web/startpage", true],
 		]);
 	});
 
 	test("an explicitly empty retry chain disables role-default fallbacks", () => {
 		const exa = roleChainModel("web", "exa");
-		const parallel = roleChainModel("web", "parallel");
+		const startpage = roleChainModel("web", "startpage");
 		const settings = Settings.isolated({
 			modelRoles: { web: "web/exa" },
 			"retry.fallbackChains": { web: [] },
 		});
 
-		expect(resolveRoleChain("web", settings, [exa, parallel]).map(candidate => candidate.model.id)).toEqual(["exa"]);
+		expect(resolveRoleChain("web", settings, [exa, startpage]).map(candidate => candidate.model.id)).toEqual(["exa"]);
 	});
 
 	test("deduplicates by routed identity while retaining distinct upstream routes", () => {

@@ -1955,7 +1955,7 @@ describe("Settings", () => {
 
 		it("repairs the old generated web fallback pair without changing unrelated chains", async () => {
 			await writeSettings({
-				modelRoles: { web: "web/parallel" },
+				modelRoles: { web: "web/startpage" },
 				retry: {
 					fallbackChains: {
 						web: [

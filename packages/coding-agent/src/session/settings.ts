@@ -1491,7 +1491,7 @@ export const cfgProvidersOpenrouterVariant = register({
 export const cfgProvidersFetch = register({
 	id: "providers.fetch",
 	type: "enum",
-	values: ["auto", "native", "trafilatura", "lynx", "parallel", "firecrawl", "jina"] as const,
+	values: ["auto", "native", "trafilatura", "lynx", "firecrawl", "jina"] as const,
 	default: "auto",
 	ui: {
 		tab: "providers",
@@ -1502,12 +1502,11 @@ export const cfgProvidersFetch = register({
 			{
 				value: "auto",
 				label: "Auto",
-				description: "Priority: native > trafilatura > lynx > parallel > firecrawl > jina",
+				description: "Priority: native > trafilatura > lynx > firecrawl > jina",
 			},
 			{ value: "native", label: "Native", description: "In-process HTML→Markdown converter (always available)" },
 			{ value: "trafilatura", label: "Trafilatura", description: "Auto-installs via uv/pip" },
 			{ value: "lynx", label: "Lynx", description: "Requires lynx system package" },
-			{ value: "parallel", label: "Parallel", description: "Requires PARALLEL_API_KEY" },
 			{ value: "firecrawl", label: "Firecrawl", description: "Requires FIRECRAWL_API_KEY" },
 			{ value: "jina", label: "Jina", description: "Uses r.jina.ai reader (JINA_API_KEY optional)" },
 		],
@@ -1528,7 +1527,7 @@ export const cfgProvidersWebKeyless = register({
 		group: "Services",
 		label: "Keyless Web Services",
 		description:
-			"Let web search and URL reading use third-party services without your credential: keyless Parallel, Exa, Firecrawl, Keenable, and Perplexity, the Jina reader, and scraped engines (Startpage, DuckDuckGo, Ecosia, Google, Mojeek, Hacker News). Off, only services you configured run.",
+			"Let web search and URL reading use third-party services without your credential: keyless Exa, Firecrawl, Keenable, and Perplexity, the Jina reader, and scraped engines (Startpage, DuckDuckGo, Ecosia, Google, Mojeek, Hacker News). Off, only services you configured run.",
 	},
 });
 

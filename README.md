@@ -1,3 +1,21 @@
+> [!WARNING]
+> **WARNING for Oh My Pi upstream repo.** Upstream oh-my-pi put Parallel at the front of the default `web_search` chain and
+> enabled it without credentials: with no search provider configured, every query the agent ran went to a
+> public Parallel endpoint, and `providers.webKeyless` (default on) let it through. Nothing in the UI says a
+> third party is in the loop, and two months of issue/PR silence ended with Parallel's own DevRel confirming
+> the placement is intentional. This fork removes Parallel from web search and URL reading.
+>
+> - Original report: <https://www.reddit.com/r/PiCodingAgent/comments/1wswvcz/default_web_search_in_ohmypi_has_been_silently/>
+> - Follow-up (the Parallel DevRel comment and the community fix): <https://www.reddit.com/r/PiCodingAgent/comments/1xy7ovw/updates_on_ohmypi_quietly_siphoning_user_web_data/>
+> - PR that landed the keyless fallback (explicit-selection-only, defensible): <https://github.com/can1357/oh-my-pi/pull/9770>
+> - Open PR asking for the revert: <https://github.com/can1357/oh-my-pi/pull/13693>
+> - Community fix requiring opt-in, merged then reverted (`852eb2d0a2`): <https://github.com/can1357/oh-my-pi/pull/19562>
+>
+> **What this fork does.** No search query or fetched URL goes to Parallel: web search, the `fetch` tool, and the
+> YouTube reader no longer call its API, so with no credentials the chain is hosted search and then the other
+> engines upstream already ranks (Exa, Firecrawl, SearXNG, Startpage, DuckDuckGo, Ecosia, Google, Mojeek,
+> Public Web). Nothing else about oh-my-pi is changed.
+
 <p align="center">
   <img src="https://github.com/can1357/oh-my-pi/blob/main/assets/hero.png?raw=true" alt="omp">
 </p>
@@ -422,7 +440,6 @@ Twenty-five backends. Pin one, or let `auto` walk the chain in order.
 | `firecrawl`  | `FIRECRAWL_API_KEY` (keyless fallback)    |
 | `brave`      | `BRAVE_API_KEY`                           |
 | `kimi`       | `/login kimi-code` or search key          |
-| `parallel`   | `PARALLEL_API_KEY`                        |
 | `synthetic`  | `SYNTHETIC_API_KEY`                       |
 | `searxng`    | self-hosted                               |
 | `duckduckgo` | no key                                    |

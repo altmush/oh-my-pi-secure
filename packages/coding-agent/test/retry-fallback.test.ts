@@ -377,7 +377,7 @@ describe("retry fallback selector resolution", () => {
 
 	it("does not adopt a model-kind role's chain for a chat session on the same model", () => {
 		const model = getBundledModel("google-antigravity", "gemini-3.8-flash");
-		const webModel = getBundledModel("web", "parallel");
+		const webModel = getBundledModel("web", "startpage");
 		if (!model || !webModel) throw new Error("Expected bundled Gemini and web-search test models");
 		const live = "google-antigravity/gemini-3.8-flash:medium";
 		const models = [model, webModel];
@@ -395,13 +395,13 @@ describe("retry fallback selector resolution", () => {
 		});
 
 		// `web` owns the live model at a different effort; its chain is search providers.
-		const webOnly = withWebChain({ web: ["web/parallel"] });
+		const webOnly = withWebChain({ web: ["web/startpage"] });
 		expect(resolveRetryFallbackChainKey(webOnly, live, model)).toBeUndefined();
 
 		// A matching chat role or `default` is still found past the kind role.
-		const withTask = withWebChain({ web: ["web/parallel"], task: ["google/gemini-3.5-flash"] });
+		const withTask = withWebChain({ web: ["web/startpage"], task: ["google/gemini-3.5-flash"] });
 		expect(resolveRetryFallbackChainKey(withTask, live, model)).toBe("task");
-		const withDefault = withWebChain({ web: ["web/parallel"], default: ["google/gemini-3.5-flash"] });
+		const withDefault = withWebChain({ web: ["web/startpage"], default: ["google/gemini-3.5-flash"] });
 		expect(resolveRetryFallbackChainKey(withDefault, live, model)).toBe("default");
 
 		// A web-search caller names its role explicitly and keeps its own chain.

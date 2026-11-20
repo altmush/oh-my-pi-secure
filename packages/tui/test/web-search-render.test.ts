@@ -101,7 +101,7 @@ describe("renderSearchResult", () => {
 	it("without a synthesized answer shows excerpts under the sources instead of the numbered text", async () => {
 		const uiTheme = (await getThemeByName("dark"))!;
 		const response: SearchResponse = {
-			provider: "parallel",
+			provider: "exa",
 			sources: [
 				{ title: "Src One", url: "https://example.com/a", snippet: "\n  first\t excerpt  line\n```\nsecond" },
 			],

@@ -10,7 +10,6 @@
  * {@link SearchResponse.provider} and search errors.
  */
 export const SEARCH_PROVIDER_LABELS = {
-	parallel: "Parallel",
 	perplexity: "Perplexity",
 	gemini: "Gemini",
 	anthropic: "Anthropic",

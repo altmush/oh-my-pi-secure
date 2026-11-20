@@ -19,7 +19,7 @@ describe("web_search native view", () => {
 				content: [],
 				details: {
 					response: {
-						provider: "parallel",
+						provider: "exa",
 						answer: "The answer",
 						sources: [{ url: "https://www.example.com/a", title: "Example", ageSeconds: 3 * 86400 }],
 						model: "m1",
@@ -59,7 +59,7 @@ describe("web_search native view", () => {
 		const view = webSearchToolRenderer.describeResult(
 			{
 				content: [{ type: "text", text: listing }],
-				details: { response: { provider: "parallel", sources } } as never,
+				details: { response: { provider: "exa", sources } } as never,
 			},
 			opts,
 			{ query: "bun expect" },

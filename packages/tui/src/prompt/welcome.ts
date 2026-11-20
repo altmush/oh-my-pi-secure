@@ -415,7 +415,7 @@ export function lockupNode(version: string, update: VersionUpdate | null = null)
 				keyed(
 					col(
 						[
-							art([span(APP_NAME, "strong")], "omp.welcome.wordmark"),
+							art([span("OMP SECURE", "strong")], "omp.welcome.wordmark"),
 							art(
 								[span(`v${version}`, "dim mono"), ...(update ? versionUpdateSpans(update) : [])],
 								"omp.welcome.version",

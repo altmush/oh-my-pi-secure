@@ -99,7 +99,7 @@ describe("default web chain", () => {
 		);
 
 		// The cheaper same-provider swap runs first; its failure falls back to the session model as-is.
-		expect(attempted.slice(0, 3)).toEqual(["web/parallel", `${host}/${searchId}`, `${host}/${sessionId}`]);
+		expect(attempted.slice(0, 2)).toEqual([`${host}/${searchId}`, `${host}/${sessionId}`]);
 		expect(attempted.filter(selector => !selector.startsWith("web/"))).toEqual([
 			`${host}/${searchId}`,
 			`${host}/${sessionId}`,
@@ -114,7 +114,7 @@ describe("default web chain", () => {
 
 		await runSearchQuery({ query: "anything" }, { authStorage, modelRegistry, sessionModel: active });
 
-		expect(attempted.slice(0, 3)).toEqual(["web/parallel", "openai-codex/gpt-6-luna", "web/exa"]);
+		expect(attempted.slice(0, 2)).toEqual(["openai-codex/gpt-6-luna", "web/exa"]);
 		expect(attempted.filter(selector => !selector.startsWith("web/"))).toEqual(["openai-codex/gpt-6-luna"]);
 	});
 
@@ -244,7 +244,7 @@ describe("default web chain", () => {
 		});
 
 		it("reaches only engines on the user's credential and hosted search", async () => {
-			authStorage.keys.setRuntime("parallel", "test-parallel-key");
+			authStorage.keys.setRuntime("exa", "test-exa-key");
 
 			await runSearchQuery(
 				{ query: "anything" },
@@ -252,7 +252,7 @@ describe("default web chain", () => {
 			);
 
 			// Keyless Exa, Firecrawl, and the scraped engines in the default chain never run.
-			expect(attempted).toEqual(["web/parallel", "anthropic/claude-haiku-4-5", "anthropic/claude-sonnet-4-5"]);
+			expect(attempted).toEqual(["anthropic/claude-haiku-4-5", "anthropic/claude-sonnet-4-5", "web/exa"]);
 		});
 
 		it("skips keyless engines the web role lists and says why nothing ran", async () => {

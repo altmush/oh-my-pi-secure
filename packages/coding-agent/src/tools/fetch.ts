@@ -28,7 +28,6 @@ import { CONVERTIBLE_EXTENSIONS } from "../utils/markit";
 import { ensureTool } from "../utils/tools-manager";
 import { decodeBody } from "../web/response-body";
 import { findFirecrawlApiKey, scrapeWithFirecrawl } from "../web/firecrawl";
-import { extractWithParallel, findParallelApiKey, getParallelExtractContent } from "../web/parallel";
 import type { RenderResult, SpecialHandler } from "../web/scrapers/types";
 import { finalizeOutput, loadPage, looksLikeHtml, MAX_BYTES } from "../web/scrapers/types";
 import { type BinaryFetchResult, convertWithMarkit, fetchBinary } from "../web/scrapers/utils";
@@ -518,7 +517,7 @@ async function parseFeedToMarkdown(content: string, maxItems = 10): Promise<stri
 }
 
 /**
- * Cap on any single remote reader-mode request (Parallel, Firecrawl, Jina) so a
+ * Cap on any single remote reader-mode request (Firecrawl, Jina) so a
  * stalled remote endpoint cannot consume the whole reader-mode budget and starve
  * the local fallback renderers (trafilatura, lynx, native). See #1449.
  */
@@ -623,19 +622,12 @@ function pruneFrontMatter(markdown: string): string {
 }
 
 /** Reader backends for {@link renderHtmlToText}, in default priority order. */
-export type FetchProvider = "native" | "trafilatura" | "lynx" | "parallel" | "firecrawl" | "jina";
+export type FetchProvider = "native" | "trafilatura" | "lynx" | "firecrawl" | "jina";
 
-const FETCH_PROVIDER_ORDER: readonly FetchProvider[] = [
-	"native",
-	"trafilatura",
-	"lynx",
-	"parallel",
-	"firecrawl",
-	"jina",
-];
+const FETCH_PROVIDER_ORDER: readonly FetchProvider[] = ["native", "trafilatura", "lynx", "firecrawl", "jina"];
 
 /** Reader backends that fetch the URL from their own servers, so a wall refusing this host may let them in. */
-const REMOTE_FETCH_PROVIDERS: readonly FetchProvider[] = ["parallel", "firecrawl", "jina"];
+const REMOTE_FETCH_PROVIDERS: readonly FetchProvider[] = ["firecrawl", "jina"];
 /** Wording of a page that shows nothing until JavaScript runs. */
 const JS_GATE_PHRASES = [
 	"enable javascript",
@@ -657,7 +649,7 @@ const BLOCK_PAGE_MAX_CHARS = 2048;
 
 /**
  * Render HTML to markdown by trying reader backends in priority order: native
- * (in-process), trafilatura, lynx, Parallel, Firecrawl, then Jina. The
+ * (in-process), trafilatura, lynx, Firecrawl, then Jina. The
  * `providers.fetch` setting picks the order — `auto` uses the default above; any
  * specific backend is tried first, then the remaining backends as fallbacks.
  * Every backend's output must clear the same length and JavaScript-gate checks,
@@ -666,8 +658,8 @@ const BLOCK_PAGE_MAX_CHARS = 2048;
  * chain to those backends, in the same order. Without a Jina key, the Jina
  * reader runs only while `providers.webKeyless` is on.
  *
- * The overall `timeout` budget bounds the whole call; remote backends (Parallel,
- * Firecrawl, Jina) are additionally capped at `REMOTE_READER_MAX_MS` so a hung
+ * The overall `timeout` budget bounds the whole call; remote backends (Firecrawl,
+ * Jina) are additionally capped at `REMOTE_READER_MAX_MS` so a hung
  * endpoint cannot starve later renderers — especially the purely-local native
  * converter, which always works on already-loaded HTML. Only a real `userSignal`
  * cancellation aborts the chain (#1449).
@@ -711,22 +703,6 @@ export async function renderHtmlToText(
 			if (!hasCommand("lynx") || overallSignal?.aborted) return null;
 			const result = await ptree.exec(["lynx", "-dump", "-nolist", "-width", "250", url], execOptions);
 			return result.ok ? result.stdout : null;
-		},
-		parallel: async () => {
-			if (!findParallelApiKey(storage)) return null;
-			const parallelResult = await extractWithParallel(
-				[url],
-				{
-					objective: "Extract the main content",
-					excerpts: true,
-					fullContent: false,
-					signal: remoteSignal(),
-					fetch: fetchImpl,
-				},
-				storage,
-			);
-			const firstDocument = parallelResult.results[0];
-			return firstDocument ? getParallelExtractContent(firstDocument) : null;
 		},
 		firecrawl: async () => {
 			if (!findFirecrawlApiKey(storage)) return null;
@@ -1592,7 +1568,7 @@ async function renderUrl(
 		};
 
 		// 5C: Render HTML via the reader-backend chain
-		// (native/trafilatura/lynx/parallel/firecrawl/jina)
+		// (native/trafilatura/lynx/firecrawl/jina)
 		const htmlResult = await renderHtmlToText(
 			finalUrl,
 			rawContent,

@@ -157,15 +157,15 @@ describe("web search directive pipeline", () => {
 	});
 
 	it("skips an engine that answered 429 on later calls instead of paying the rate limit again", async () => {
-		let parallelCalls = 0;
-		const context = await stubRoleProvider("parallel", async () => {
-			parallelCalls++;
-			throw new SearchProviderError("parallel", "parallel: MCP rate limit reached (429)", 429);
+		let kagiCalls = 0;
+		const context = await stubRoleProvider("kagi", async () => {
+			kagiCalls++;
+			throw new SearchProviderError("kagi", "kagi: MCP rate limit reached (429)", 429);
 		});
 		cfgRetryFallbackChains.set(settings, { web: ["web/exa"] });
-		const parallel = await provider.getSearchProvider("parallel");
+		const kagi = await provider.getSearchProvider("kagi");
 		context.getProvider.mockImplementation(async requested => {
-			if (requested === "parallel") return parallel;
+			if (requested === "kagi") return kagi;
 			if (requested !== "exa") throw new Error(`Unexpected provider: ${requested}`);
 			return {
 				id: "exa",
@@ -180,7 +180,7 @@ describe("web search directive pipeline", () => {
 		await runSearchQuery({ query: "first" }, context);
 		const second = await runSearchQuery({ query: "second" }, context);
 
-		expect(parallelCalls).toBe(1);
+		expect(kagiCalls).toBe(1);
 		expect(second.details.response.provider).toBe("exa");
 		expect(second.content[0]?.text).toContain("rate-limited (429)");
 	});

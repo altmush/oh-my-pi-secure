@@ -419,7 +419,6 @@ modelRoles:
 | `firecrawl`  | `FIRECRAWL_API_KEY`（可无密钥回退）       |
 | `brave`      | `BRAVE_API_KEY`                           |
 | `kimi`       | `/login kimi-code` 或搜索密钥             |
-| `parallel`   | `PARALLEL_API_KEY`                        |
 | `synthetic`  | `SYNTHETIC_API_KEY`                       |
 | `searxng`    | 自托管                                    |
 | `duckduckgo` | 无需密钥                                  |

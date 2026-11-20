@@ -529,7 +529,6 @@ behavior {
 		model "factory-droid/gemini-3-pro-image-preview"
 	}
 	role-defaults "web" {
-		model "web/parallel"
 		model "web/hosted"
 		model "web/exa"
 		model "web/firecrawl"
